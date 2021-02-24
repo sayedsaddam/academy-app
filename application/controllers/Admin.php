@@ -13,24 +13,9 @@ class Admin extends CI_Controller{
     public function index(){
         $this->load->view('login');
     }
-    // Sign up - Create account
-    public function admin_signup(){
-        $data = array(
-            'fullname' => $this->input->post('name'),
-            'email' => $this->input->post('email'),
-            'username' => $this->input->post('username'),
-            'password' => sha1($this->input->post('password'))
-        );
-        if($this->admin_model->signup($data)){
-            $this->session->set_flashdata("success", "<strong>Success! </strong>Account created successfully.");
-            redirect('admin');
-        }else{
-            $this->session->set_flashdata("Failed", "<strong>Oops! </strong>Something went wrong, but don't fret. Let's give it another shot!");
-            redirect('admin/signup');
-        }
-    }
     // Admin Login
     public function admin_login(){
+        $response = array('msg' => 'Interal Server Error', 'status_code' => 500);
         $username = $this->input->post('username');
         $password = sha1($this->input->post('password'));
         $valid_login = $this->admin_model->login($username, $password);
@@ -39,7 +24,9 @@ class Admin extends CI_Controller{
             $id = $valid_login->id;
             $fullname = $valid_login->fullname;
             $this->session->set_userdata(array('id' => $id, 'username' => $username, 'fullname' => $fullname));
-            echo "Hello: ". $this->session->userdata('fullname');
+            header('Content-Type: application/json');
+            $array = ['username'=>$this->session->userdata('username'), 'fullname'=> $this->session->userdata('fullname')];
+            echo json_encode($array);
         }else{
             $this->session->set_flashdata('failed', 'Username or password might not be correct. Try again!');
             redirect('admin');

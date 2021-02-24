@@ -23,7 +23,9 @@ class Home extends CI_Controller{
             $user_id = $valid_login->user_id;
             $fullname = $valid_login->fullname;
             $this->session->set_userdata(array('id' => $user_id, 'username' => $username, 'fullname' => $fullname));
-            echo "Hello: ".$this->session->userdata('fullname');
+            header('Content-Type: application/json');
+            $array = ['username'=>$this->session->userdata('username'), 'fullname'=> $this->session->userdata('fullname')];
+            echo json_encode($array);
         }else{
             $this->session->set_flashdata('failed', 'The table has no data in it. Try inserting data into it.');
             redirect('home');
